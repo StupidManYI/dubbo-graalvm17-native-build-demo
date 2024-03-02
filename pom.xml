@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.ingsha</groupId>
+    <artifactId>dubbo-graalvm17-native-build-demo</artifactId>
+    <version>1.0.0</version>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <native.maven.plugin.version>0.10.1</native.maven.plugin.version>
+        <dubbo.verison>3.3.0-beta.1</dubbo.verison>
+        <nacos.version>2.2.3</nacos.version>
+        <mainClass>com.ingsha.nativeDemo.Application</mainClass>
+    </properties>
+
+
+    <dependencies>
+        <!--dubbo-->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>${dubbo.verison}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hessian-lite</artifactId>
+                    <groupId>com.alibaba</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-config-spring6</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-native</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-serialization-fastjson2</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <!--nacos-->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-metadata-report-nacos</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-registry-nacos</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos.version}</version>
+        </dependency>
+        <!--logback-->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+        <!--spring-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <!-- 项目信息等其他配置 -->
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <activation>
+                <activeByDefault>false</activeByDefault> <!-- 设置默认不激活 -->
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.dubbo</groupId>
+                        <artifactId>dubbo-maven-plugin</artifactId>
+                        <version>3.3.0-beta.1</version>
+                        <configuration>
+                            <mainClass>${mainClass}</mainClass>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>dubbo-process-aot</goal>
+                                </goals>
+                                <phase>process-sources</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>add-reachability-metadata</id>
+                                <goals>
+                                    <goal>add-reachability-metadata</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                            <!-- imageName用于设置生成的二进制文件名称 -->
+                            <imageName>${project.artifactId}</imageName>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+
+                            <!--                            <buildArgs>-->
+                            <!--                                &#45;&#45;no-fallback-->
+                            <!--                                &lt;!&ndash; JmxMBeanServer &ndash;&gt;-->
+                            <!--                                &#45;&#45;trace-object-instantiation=com.sun.jmx.mbeanserver.JmxMBeanServer-->
+                            <!--                                &lt;!&ndash; JmxMBeanServer end&ndash;&gt;-->
+                            <!--                                &#45;&#45;initialize-at-build-time=org.slf4j.MDC-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.slf4j.LoggerFactory-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.slf4j.impl.StaticLoggerBinder-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.apache.log4j.helpers.Loader-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.apache.log4j.Logger-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.apache.log4j.helpers.LogLog-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.apache.log4j.LogManager-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.apache.log4j.spi.LoggingEvent-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.slf4j.impl.Log4jLoggerFactory-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.slf4j.impl.Log4jLoggerAdapter-->
+
+                            <!--                                &#45;&#45;initialize-at-build-time=org.eclipse.collections.api.factory.Sets-->
+
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.buffer.AbstractByteBufAllocator&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.channel.AbstractChannel&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.ResourceLeakDetector&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.StringUtil&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.SystemPropertyUtil&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.concurrent.DefaultPromise&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.concurrent.FastThreadLocal&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.PlatformDependent&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.InternalThreadLocalMap&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.PlatformDependent0&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.CleanerJava9&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.handler.ssl.BouncyCastleAlpnSslUtils&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.util.Recycler$2&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.handler.codec.DateFormatter$1&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash;                                &#45;&#45;initialize-at-run-time=io.netty.handler.codec.CodecOutputList$2&ndash;&gt;-->
+
+                            <!--                                &lt;!&ndash; 新增io &ndash;&gt;-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.epoll.Epoll-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.epoll.Native-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.epoll.EpollEventLoop-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.epoll.EpollEventArray-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.DefaultFileRegion-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.kqueue.KQueueEventArray-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.kqueue.KQueueEventLoop-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.kqueue.Native-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.unix.Errors-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.unix.IovArray-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.unix.Limits-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.util.internal.logging.Log4JLogger-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.unix.Socket-->
+
+                            <!--                                &#45;&#45;initialize-at-run-time=io.netty.channel.ChannelHandlerMask-->
+
+                            <!--                                &lt;!&ndash; JmxMBeanServer &ndash;&gt;-->
+                            <!--                                &#45;&#45;initialize-at-run-time=com.sun.jmx.mbeanserver.JmxMBeanServer-->
+                            <!--                                &lt;!&ndash; JmxMBeanServer end&ndash;&gt;-->
+
+                            <!--                                &#45;&#45;report-unsupported-elements-at-runtime-->
+
+                            <!--                                &#45;&#45;allow-incomplete-classpath-->
+
+                            <!--                                &#45;&#45;enable-url-protocols=http-->
+
+                            <!--                                -H:+ReportExceptionStackTraces-->
+                            <!--                            </buildArgs>-->
+
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>process-aot</id>
+                                <goals>
+                                    <goal>process-aot</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.12.1</version>
+                        <configuration>
+                            <release>17</release>
+                            <fork>true</fork>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+
+
+        </plugins>
+    </build>
+
+
+</project>
