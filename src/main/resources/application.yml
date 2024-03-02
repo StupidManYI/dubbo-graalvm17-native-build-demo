@@ -6,7 +6,6 @@ spring:
 
 # before run application ,you need to modify the following configuration (nacos IP-address and create nacos-namespace ) first
 nacosUrl: nacos://192.168.0.103:8848
-nacos-namespace: 6a96a56b-18c5-4b5b-bf92-8d0a35b6900c
 
 
 
@@ -24,7 +23,5 @@ dubbo:
   registry:
     address: ${nacosUrl}
     group: dubbo
-    parameters:
-      namespace: ${nacos-namespace}
   consumer:
     serialization: fastjson2
