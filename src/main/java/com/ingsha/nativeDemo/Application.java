@@ -20,8 +20,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
     public static void main(String[] args) {
-        System.setProperty("native", "true");
+//        System.setProperty("native", "true");
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+        System.out.println("启动成功");
     }
 
 }

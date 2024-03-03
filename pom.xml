@@ -27,7 +27,7 @@
         <!--dubbo-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo</artifactId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
             <version>${dubbo.verison}</version>
             <exclusions>
                 <exclusion>
@@ -51,7 +51,6 @@
             <artifactId>dubbo-serialization-fastjson2</artifactId>
             <version>${dubbo.verison}</version>
         </dependency>
-        <!--nacos-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-metadata-report-nacos</artifactId>
@@ -63,10 +62,28 @@
             <version>${dubbo.verison}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-remoting-netty4</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-rpc-dubbo</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-rpc-triple</artifactId>
+            <version>${dubbo.verison}</version>
+        </dependency>
+        <!--nacos-->
+
+        <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>${nacos.version}</version>
         </dependency>
+
         <!--logback-->
         <dependency>
             <groupId>ch.qos.logback</groupId>

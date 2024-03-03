@@ -11,6 +11,7 @@ nacosUrl: nacos://192.168.0.103:8848
 
 dubbo:
   native: true
+  logger: slf4j
   metadata-report:
     address: ${nacosUrl}
   application:
