@@ -1,7 +1,9 @@
 spring:
   application:
     name: ingsha_application_user
-
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
 
 
 # before run application ,you need to modify the following configuration (nacos IP-address and create nacos-namespace ) first
