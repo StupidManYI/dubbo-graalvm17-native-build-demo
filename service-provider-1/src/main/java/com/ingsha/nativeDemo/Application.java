@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 
 @SpringBootApplication
-@EnableScheduling
 @EnableDubbo
 public class Application {
 
