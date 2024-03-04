@@ -7,8 +7,8 @@ spring:
 
 
 # before run application ,you need to modify the following configuration (nacos IP-address and create nacos-namespace ) first
-# nacosUrl: nacos://127.0.0.1:8848
-nacosUrl: nacos://192.168.0.103:8848
+nacosUrl: nacos://127.0.0.1:8848
+#nacosUrl: nacos://192.168.0.103:8848
 
 
 dubbo:
